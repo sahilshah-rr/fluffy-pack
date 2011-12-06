@@ -1,26 +1,24 @@
 class Tweet < ActiveRecord::Base
 
   def self.check_for_new_tweets
-    response   = "NO"
-    last_tweet = self.first || self.create!(:tweet_id => "144138727650889728", :last_check_at => 1.day.ago)
-    unless last_tweet.last_check_at > 1.minute.ago
-      tweets              = JSON.parse(
-        Tweet.access_token.request(
-          :get,
-          "https://api.twitter.com/1/statuses/mentions.json?trim_user=t"
-        ).body
-      )
-      new_last_check_time = Time.now.utc
-      new_max_tweet_id    = tweets.map { |tweet| tweet["id_str"] }.max
-      if tweets.select { |tweet|
-        tweet["id_str"] > last_tweet.tweet_id
-      }.any? { |tweet|
-        tweet["text"].match(/^.*(love|<3).*$/im)
-      }
-        response = "YES"
-      end
-      last_tweet.update_attributes(:tweet_id => new_max_tweet_id, :last_check_at => new_last_check_time)
+    response            = "NO"
+    last_tweet          = self.first || self.create!(:tweet_id => "144138727650889728", :last_check_at => 1.day.ago)
+    tweets              = JSON.parse(
+      Tweet.access_token.request(
+        :get,
+        "https://api.twitter.com/1/statuses/mentions.json?trim_user=t"
+      ).body
+    )
+    new_last_check_time = Time.now.utc
+    new_max_tweet_id    = tweets.map { |tweet| tweet["id_str"] }.max
+    if tweets.select { |tweet|
+      tweet["id_str"] > last_tweet.tweet_id
+    }.any? { |tweet|
+      tweet["text"].match(/^.*(love|<3).*$/im)
+    }
+      response = "YES"
     end
+    last_tweet.update_attributes(:tweet_id => new_max_tweet_id, :last_check_at => new_last_check_time)
     response
   end
 
