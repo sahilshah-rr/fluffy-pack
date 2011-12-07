@@ -10,9 +10,9 @@ class Tweet < ActiveRecord::Base
       ).body
     )
     new_last_check_time = Time.now.utc
-    new_max_tweet_id    = tweets.map { |tweet| tweet["id_str"].to_l }.max.to_s
+    new_max_tweet_id    = tweets.map { |tweet| tweet["id_str"].to_l }.max.to_i
     if tweets.select { |tweet|
-      tweet["id_str"].to_l > last_tweet.tweet_id.to_l
+      tweet["id_str"].to_i > last_tweet.tweet_id.to_i
     }.any? { |tweet|
       tweet["text"].match(/^.*(love|<3).*$/im).present?
     }
