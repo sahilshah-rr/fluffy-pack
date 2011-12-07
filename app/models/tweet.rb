@@ -10,13 +10,13 @@ class Tweet < ActiveRecord::Base
       ).body
     )
     new_last_check_time = Time.now.utc
-    new_max_tweet_id    = tweets.map { |tweet| tweet["id_str"] }.max
+    new_max_tweet_id    = tweets.map { |tweet| tweet["id_str"].to_l }.max.to_s
     if tweets.select { |tweet|
-      tweet["id_str"] > last_tweet.tweet_id
+      tweet["id_str"].to_l > last_tweet.tweet_id.to_l
     }.any? { |tweet|
-      tweet["text"].match(/^.*(love|<3).*$/im)
+      tweet["text"].match(/^.*(love|<3).*$/im).present?
     }
-      response = "YES"
+      response = "YO"
     end
     last_tweet.update_attributes(:tweet_id => new_max_tweet_id, :last_check_at => new_last_check_time)
     response
