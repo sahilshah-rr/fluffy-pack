@@ -20,8 +20,10 @@ class Tweet < ActiveRecord::Base
       response = "YO"
     end
     last_tweet.update_attributes(:tweet_id => new_max_tweet_id, :last_check_at => new_last_check_time)
+    Rails.logger.info("\n\nRESPONSE:       #{response}\n\n")
     response
   rescue
+    Rails.logger.info("\n\nRESPONSE:       NO\n\n")
     "NO"
   end
 
