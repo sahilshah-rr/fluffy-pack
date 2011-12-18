@@ -9,6 +9,7 @@ class Tweet < ActiveRecord::Base
         "https://api.twitter.com/1/statuses/mentions.json?trim_user=t"
       ).body
     )
+    Rails.logger.info(tweets.to_s)
     new_last_check_time = Time.now.utc
     new_max_tweet_id    = tweets.map { |tweet| tweet["id_str"].to_i }.max.to_i
     if tweets.select { |tweet|
@@ -20,6 +21,8 @@ class Tweet < ActiveRecord::Base
     end
     last_tweet.update_attributes(:tweet_id => new_max_tweet_id, :last_check_at => new_last_check_time)
     response
+  rescue
+    "NO"
   end
 
   # Exchange your oauth_token and oauth_token_secret for an AccessToken instance.
